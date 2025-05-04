@@ -56,9 +56,13 @@ void ChatService::login(const TcpConnectionPtr& conn,json &js,Timestamp time)
         }
         else
         {
+            {
+                std::lock_guard<std::mutex>lock(_connMutex);
+                _userConnMap.insert({id,conn});
+            }
             user.setState("online");
             _userModel.updateState(user);
-
+            
             json response;
             response["msgid"]=LOGIN_MSG_ACK;
             response["errno"]=0;

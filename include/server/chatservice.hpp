@@ -5,6 +5,7 @@
 #include<unordered_map>
 #include<functional>
 #include<json.hpp>
+#include<mutex>
 
 #include "usermodel.hpp"
 
@@ -33,9 +34,13 @@ private:
     //存储消息id和对应业务的处理方法
     std::unordered_map<int,MsgHandler>_msgHandlerMap;
 
+    std::unordered_map<int,muduo::net::TcpConnectionPtr>_userConnMap;
+
+    std::mutex _connMutex;
+
     UserModel _userModel;
 
-    
+
 };
 
 #endif
