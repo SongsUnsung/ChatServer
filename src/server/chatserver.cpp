@@ -24,7 +24,7 @@ void ChatServer::start()
 
 void ChatServer::onConnection(const TcpConnectionPtr& conn)
 {
-    if(conn->connected())
+    if(!conn->connected())
     {
         conn->shutdown();
     }
