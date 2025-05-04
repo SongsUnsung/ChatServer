@@ -5,7 +5,7 @@ using std::string;
 
 static string server = "127.0.0.1";
 static string user = "saul";
-static string password = "";
+static string password = "mysqlpasswd";
 static string dbname = "chat";
 
 
@@ -28,6 +28,11 @@ bool MySQL::connect()
         if (p != nullptr)
         {
             mysql_query(_conn, "set names gbk");
+            LOG_INFO<<"connect mysql success!";
+        }
+        else
+        {
+            LOG_INFO<<"connect mysql fail!";
         }
         return p;
 }
@@ -52,4 +57,9 @@ MYSQL_RES* MySQL::query(string sql)
         return nullptr;
     }
     return mysql_use_result(_conn);
+}
+
+MYSQL* MySQL::getConnection()
+{
+    return _conn;
 }

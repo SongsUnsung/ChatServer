@@ -6,6 +6,8 @@
 #include<functional>
 #include<json.hpp>
 
+#include "usermodel.hpp"
+
 using json=nlohmann::json;
 
 
@@ -30,6 +32,8 @@ private:
     ChatService();
     //存储消息id和对应业务的处理方法
     std::unordered_map<int,MsgHandler>_msgHandlerMap;
+
+    UserModel _userModel;
 };
 
 #endif
