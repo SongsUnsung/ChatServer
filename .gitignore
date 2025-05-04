@@ -1,0 +1,55 @@
+# 忽略所有 build 目录下的文件，但保留目录结构
+build/*
+!build/.gitkeep
+
+# 如果有其他类似 cmake-build-xxx 的目录也要忽略内容但保留结构
+cmake-build-*/**
+!cmake-build-*/.gitkeep
+
+# 忽略编译生成文件
+*.o
+*.obj
+*.lo
+*.a
+*.so
+*.so.*
+*.dll
+*.dylib
+*.lib
+*.exe
+*.out
+
+# 忽略 CMake 生成的缓存和文件
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# 忽略临时文件
+*.log
+*.tmp
+*.bak
+*~
+*.swp
+*.swo
+
+# 忽略 IDE 或编辑器的配置文件
+.vscode/
+.idea/
+*.user
+*.DS_Store
+.directory
+
+# 忽略 Clangd 索引缓存
+.clangd/
+.cache/
+
+# 忽略代码覆盖率文件
+*.gcno
+*.gcda
+*.gcov
+
+# 忽略 Ninja 构建文件
+.ninja_deps
+.ninja_log
