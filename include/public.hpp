@@ -6,4 +6,4 @@ enum EnMsgType{
     REG_MSG
 };
 
-#endif;
+#endif
