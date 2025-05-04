@@ -2,11 +2,12 @@
 #include "public.hpp"
 
 
-
+#include<vector>
 #include <muduo/base/Logging.h>
 
 using namespace muduo;
 using namespace muduo::net;
+using std::vector;
 
 ChatService* ChatService::instance()
 {
@@ -18,7 +19,12 @@ ChatService::ChatService()
 {
     _msgHandlerMap.insert({LOGIN_MSG,std::bind(&ChatService::login,this,_1,_2,_3)});
     _msgHandlerMap.insert({REG_MSG,std::bind(&ChatService::reg,this,_1,_2,_3)});
+    _msgHandlerMap.insert({ONE_CHAT_MSG,std::bind(&ChatService::oneChat,this,_1,_2,_3)});
+}
 
+void ChatService::reset()
+{
+    _userModel.resetState();
 }
 
 MsgHandler ChatService::getHandler(int msgid)
@@ -68,6 +74,16 @@ void ChatService::login(const TcpConnectionPtr& conn,json &js,Timestamp time)
             response["errno"]=0;
             response["id"]=user.getId();
             response["name"]=user.getName();
+
+            //查询用户是否有离线消息
+            vector<string>vec=_offlineMsgModel.query(id);
+            if(!vec.empty())
+            {
+                response["offlinemsg"]=vec;
+
+                _offlineMsgModel.remove(id);
+            }
+
             conn->send(response.dump());
         }
         
@@ -134,4 +150,28 @@ void ChatService::clientCloseException(const TcpConnectionPtr &conn)
         user.setState("offline");
         _userModel.updateState(user);
     }
+}
+
+
+void ChatService::oneChat(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time)
+{
+    int toid=js["to"].get<int>();
+
+    {
+        std::lock_guard<std::mutex>lock(_connMutex);
+        auto it=_userConnMap.find(toid);
+        if(it!=_userConnMap.end())
+        {
+            it->second->send(js.dump());
+            return;
+        } 
+        //{"msgid":1,"id":13,"password":"123456"}
+        //{"msgid":1,"id":15,"password":"666666"}
+        //{"msgid":5,"id":13,"from":"zhang san","to":15,"msg":"hello81"}
+        //
+
+    }
+
+    _offlineMsgModel.insert(toid,js.dump());
+
 }

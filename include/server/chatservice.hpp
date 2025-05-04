@@ -7,6 +7,7 @@
 #include<json.hpp>
 #include<mutex>
 
+#include "offlinemessagemodel.hpp"
 #include "usermodel.hpp"
 
 using json=nlohmann::json;
@@ -26,11 +27,15 @@ public:
     //处理注册业务
     void reg(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time);
 
+    void oneChat(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time);
+
     //获取消息对应的处理器
     MsgHandler getHandler(int msgid);
 
     void clientCloseException(const muduo::net::TcpConnectionPtr &conn);
     
+    void reset();
+
 private:
     ChatService();
     //存储消息id和对应业务的处理方法
@@ -42,7 +47,7 @@ private:
 
     UserModel _userModel;
 
-
+    OfflineMsgModel _offlineMsgModel;
 };
 
 #endif
