@@ -5,7 +5,7 @@
 #include <muduo/base/Logging.h>
 
 using namespace muduo;
-
+using namespace muduo::net;
 
 ChatService* ChatService::instance()
 {

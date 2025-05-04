@@ -3,8 +3,13 @@
 #include "chatservice.hpp"
 
 #include<functional>
-using namespace std;
-using namespace placeholders;
+using std::string;
+using std::bind;
+using namespace muduo;
+using namespace muduo::net;
+using std::placeholders::_1;
+using std::placeholders::_2;
+using std::placeholders::_3;
 
 using json=nlohmann::json;
 

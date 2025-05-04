@@ -2,6 +2,8 @@
 #include <iostream>
 
 using namespace std;
+using namespace muduo::net;
+using namespace muduo;
 
 int main(){
     EventLoop loop;
