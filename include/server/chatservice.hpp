@@ -28,6 +28,8 @@ public:
 
     //获取消息对应的处理器
     MsgHandler getHandler(int msgid);
+
+    void clientCloseException(const muduo::net::TcpConnectionPtr &conn);
     
 private:
     ChatService();

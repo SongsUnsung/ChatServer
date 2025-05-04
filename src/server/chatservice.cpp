@@ -62,7 +62,7 @@ void ChatService::login(const TcpConnectionPtr& conn,json &js,Timestamp time)
             }
             user.setState("online");
             _userModel.updateState(user);
-            
+
             json response;
             response["msgid"]=LOGIN_MSG_ACK;
             response["errno"]=0;
@@ -112,4 +112,26 @@ void ChatService::reg(const TcpConnectionPtr& conn,json &js,Timestamp time)
     }
     //{"msgid":2,"name":"zhu c","password":"123456"}
 
+}
+
+void ChatService::clientCloseException(const TcpConnectionPtr &conn)
+{   
+    User user;
+    {
+        std::lock_guard<std::mutex>lock(_connMutex);
+        for(auto it=_userConnMap.begin();it!=_userConnMap.end();++it)
+        {
+            if(it->second==conn)
+            {   
+                user.setId(it->first);
+                _userConnMap.erase(it);
+                break;
+            }
+        }
+    }
+    if(user.getId()!=-1)
+    {
+        user.setState("offline");
+        _userModel.updateState(user);
+    }
 }
