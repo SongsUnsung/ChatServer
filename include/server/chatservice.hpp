@@ -34,6 +34,8 @@ private:
     std::unordered_map<int,MsgHandler>_msgHandlerMap;
 
     UserModel _userModel;
+
+    
 };
 
 #endif

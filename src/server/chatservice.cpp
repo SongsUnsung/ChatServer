@@ -2,6 +2,7 @@
 #include "public.hpp"
 
 
+
 #include <muduo/base/Logging.h>
 
 using namespace muduo;
@@ -39,7 +40,45 @@ MsgHandler ChatService::getHandler(int msgid)
 //处理登录业务
 void ChatService::login(const TcpConnectionPtr& conn,json &js,Timestamp time)
 {
-    LOG_INFO<<"Do login service.";
+    //LOG_INFO<<"Do login service.";
+    int id=js["id"].get<int>();
+    string pwd=js["password"];
+
+    User user=_userModel.query(id);
+    if(user.getId()!=-1&&user.getPwd()==pwd){
+        if(user.getState()=="online")
+        {
+            json response;
+            response["msgid"]=LOGIN_MSG_ACK;
+            response["errno"]=2;
+            response["errmsg"]="该账号已登录";
+            conn->send(response.dump());
+        }
+        else
+        {
+            user.setState("online");
+            _userModel.updateState(user);
+
+            json response;
+            response["msgid"]=LOGIN_MSG_ACK;
+            response["errno"]=0;
+            response["id"]=user.getId();
+            response["name"]=user.getName();
+            conn->send(response.dump());
+        }
+        
+    }
+    else
+    {
+        json response;
+        response["msgid"]=LOGIN_MSG_ACK;
+        response["errno"]=1;
+        response["errmsg"]="用户名或者密码错误";
+        conn->send(response.dump());
+    }
+    //{"msgid":1,"id":15,"password":"123456"}
+    //{"msgid":1,"id":13,"password":"123456"}
+
 }
 //处理注册业务
 void ChatService::reg(const TcpConnectionPtr& conn,json &js,Timestamp time)
@@ -68,4 +107,5 @@ void ChatService::reg(const TcpConnectionPtr& conn,json &js,Timestamp time)
         conn->send(responsee.dump());
     }
     //{"msgid":2,"name":"zhu c","password":"123456"}
+
 }
