@@ -7,6 +7,7 @@ enum EnMsgType{
     REG_MSG,
     REG_MSG_ACK,
     ONE_CHAT_MSG,
+    ADD_FRIEND_MSG,
 };
 
 #endif

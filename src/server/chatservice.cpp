@@ -20,6 +20,7 @@ ChatService::ChatService()
     _msgHandlerMap.insert({LOGIN_MSG,std::bind(&ChatService::login,this,_1,_2,_3)});
     _msgHandlerMap.insert({REG_MSG,std::bind(&ChatService::reg,this,_1,_2,_3)});
     _msgHandlerMap.insert({ONE_CHAT_MSG,std::bind(&ChatService::oneChat,this,_1,_2,_3)});
+    _msgHandlerMap.insert({ADD_FRIEND_MSG,std::bind(&ChatService::addFriend,this,_1,_2,_3)});
 }
 
 void ChatService::reset()
@@ -82,6 +83,21 @@ void ChatService::login(const TcpConnectionPtr& conn,json &js,Timestamp time)
                 response["offlinemsg"]=vec;
 
                 _offlineMsgModel.remove(id);
+            }
+
+            vector<User>userVec=_friendModel.query(id);
+            if(!userVec.empty())
+            {
+                vector<string>vec2;
+                for(User &user:userVec)
+                {
+                    json js;
+                    js["id"]=user.getId();
+                    js["name"]=user.getName();
+                    js["state"]=user.getState();
+                    vec2.push_back(js.dump());
+                }
+                response["friends"]=vec2;
             }
 
             conn->send(response.dump());
@@ -174,4 +190,12 @@ void ChatService::oneChat(const muduo::net::TcpConnectionPtr &conn,json &js,mudu
 
     _offlineMsgModel.insert(toid,js.dump());
 
+}
+
+void ChatService::addFriend(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time)
+{
+    int userid=js["id"].get<int>();
+    int friendid=js["friendid"].get<int>();
+
+    _friendModel.insert(userid,friendid);
 }

@@ -9,6 +9,7 @@
 
 #include "offlinemessagemodel.hpp"
 #include "usermodel.hpp"
+#include "friendmodel.hpp"
 
 using json=nlohmann::json;
 
@@ -29,6 +30,7 @@ public:
 
     void oneChat(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time);
 
+    void addFriend(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time);
     //获取消息对应的处理器
     MsgHandler getHandler(int msgid);
 
@@ -48,6 +50,8 @@ private:
     UserModel _userModel;
 
     OfflineMsgModel _offlineMsgModel;
+
+    FriendModel _friendModel;
 };
 
 #endif
