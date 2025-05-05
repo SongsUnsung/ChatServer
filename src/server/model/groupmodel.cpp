@@ -34,8 +34,8 @@ void GroupModel::addGroup(int userid,int groupid,std::string role)
 std::vector<Group>GroupModel::queryGroups(int userid)
 {
     char sql[1024]={0};
-    sprintf(sql,
-        "select a.id,a.groupname,a.groupdesc from allgroup a inner join groupuser b on a.id =b.groupid where b.userid=%d",userid);
+    sprintf(sql,"select a.id,a.groupname,a.groupdesc from allgroup a inner join \
+         groupuser b on a.id = b.groupid where b.userid=%d",userid);
 
     std::vector<Group>groupVec;
 

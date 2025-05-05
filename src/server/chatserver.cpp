@@ -1,7 +1,7 @@
 #include "chatserver.hpp"
 #include "json.hpp"
 #include "chatservice.hpp"
-
+#include <iostream>
 #include<functional>
 using std::string;
 using std::bind;
@@ -41,6 +41,10 @@ void ChatServer::onMessage(const TcpConnectionPtr &conn,
                 Timestamp time)
 {
     string buf=buffer->retrieveAllAsString();
+
+    // 测试，添加json打印代码
+    std::cout << buf << std::endl;
+
     json js=json::parse(buf);
     //解耦网络模块代码和业务代码模块
 

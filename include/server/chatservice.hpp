@@ -11,6 +11,7 @@
 #include "usermodel.hpp"
 #include "friendmodel.hpp"
 #include "groupmodel.hpp"
+#include "redis.hpp"
 
 using json=nlohmann::json;
 
@@ -39,7 +40,9 @@ public:
 
     void groupChat(const muduo::net::TcpConnectionPtr& conn,json &js,muduo::Timestamp time);
 
+    void loginout(const muduo::net::TcpConnectionPtr &conn, json &js, muduo::Timestamp time);
 
+    void handleRedisSubscribeMessage(int userid, std::string msg);
     //获取消息对应的处理器
     MsgHandler getHandler(int msgid);
 
@@ -63,6 +66,8 @@ private:
     FriendModel _friendModel;
 
     GroupModel _groupModel;
+
+    Redis _redis;
 };
 
 #endif
