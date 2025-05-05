@@ -31,8 +31,8 @@ User UserModel::query(int id)
         MYSQL_RES* res=mysql.query(sql);
         if(res!=nullptr)
         {
-            MYSQL_ROW row = mysql_fetch_row(res);
-            if(row!=nullptr)
+            MYSQL_ROW row;
+            if((row = mysql_fetch_row(res))!=nullptr)
             {
                 User user;
                 user.setId(atoi(row[0]));

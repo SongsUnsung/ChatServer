@@ -169,7 +169,7 @@ void ChatService::clientCloseException(const TcpConnectionPtr &conn)
 }
 
 
-void ChatService::oneChat(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time)
+void ChatService::oneChat(const TcpConnectionPtr &conn,json &js,muduo::Timestamp time)
 {
     int toid=js["to"].get<int>();
 
@@ -192,10 +192,52 @@ void ChatService::oneChat(const muduo::net::TcpConnectionPtr &conn,json &js,mudu
 
 }
 
-void ChatService::addFriend(const muduo::net::TcpConnectionPtr &conn,json &js,muduo::Timestamp time)
+void ChatService::addFriend(const TcpConnectionPtr &conn,json &js,muduo::Timestamp time)
 {
     int userid=js["id"].get<int>();
     int friendid=js["friendid"].get<int>();
 
     _friendModel.insert(userid,friendid);
+}
+
+
+void ChatService::createGroup(const TcpConnectionPtr &conn,json &js,Timestamp time)
+{
+    int userid=js["id"].get<int>();
+    string name=js["groupname"];
+    string desc=js["groupdesc"];
+
+    Group group(-1,name,desc);
+    if(_groupModel.createGroup(group))
+    {
+        _groupModel.addGroup(userid,group.getId(),"creator");
+    }
+}
+
+void ChatService::addGroup(const TcpConnectionPtr& conn,json &js,Timestamp time)
+{
+    int userid=js["id"].get<int>();
+    int groupid=js["groupid"].get<int>();
+    _groupModel.addGroup(userid,groupid,"normal");
+}
+
+void ChatService::groupChat(const TcpConnectionPtr& conn,json &js,Timestamp time)
+{
+    int userid=js["id"].get<int>();
+    int groupid=js["groupid"].get<int>();
+    vector<int>useridVec=_groupModel.queryGroupUsers(userid,groupid);
+    
+    std::lock_guard<std::mutex>lock(_connMutex);
+
+    for(int id:useridVec)
+    {
+        auto it=_userConnMap.find(id);
+        if(it!=_userConnMap.end())
+        {
+            it->second->send(js.dump());
+        }
+        else{
+            _offlineMsgModel.insert(id,js.dump());
+        }
+    }
 }
